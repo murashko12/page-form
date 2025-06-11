@@ -47,13 +47,15 @@ function CreateFormBtn() {
 
     async function onSubmit(values: formSchemaType) {
         try {
-            await CreateForm(values)
+            const formId = await CreateForm(values)
             toast.success(
                 <>
                     <strong>Success</strong>
                     <div>Form created successfully</div>
                 </>
             )
+            console.log("FORM ID", formId);
+            
         } catch (error) {
             toast.error(
                 <>

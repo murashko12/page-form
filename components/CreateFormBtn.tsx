@@ -23,7 +23,6 @@ import {
 // import { toast } from './ui/use-toast'
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 
 import { BsFileEarmarkPlus } from "react-icons/bs"
 import { ImSpinner2 } from "react-icons/im"
@@ -32,30 +31,36 @@ import { Description } from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
-
-
-const formSchema = z.object({
-    name: z.string().min(4),
-    description: z.string().optional()
-})
-
-type formSchemaType = z.infer<typeof formSchema>
+import { toast } from 'sonner'
+import { formSchema, formSchemaType } from '@/schemas/form'
+import { CreateForm } from '@/actions/form'
 
 function CreateFormBtn() {
 
     const form = useForm<formSchemaType>({
-        resolver: zodResolver(formSchema)
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            name: '',
+            description: ''
+        }
     })
 
-    function onSubmit(values: formSchemaType) {
+    async function onSubmit(values: formSchemaType) {
         try {
-            
+            await CreateForm(values)
+            toast.success(
+                <>
+                    <strong>Success</strong>
+                    <div>Form created successfully</div>
+                </>
+            )
         } catch (error) {
-            // toast({
-            //     title: "Error",
-            //     description: "Something went wrong, please try again later",
-            //     variant: "destructive"
-            // })
+            toast.error(
+                <>
+                    <strong>Error</strong>
+                    <div>Something went wrong, please try again later</div>
+                </>
+            )
 
         }
     }
@@ -104,7 +109,7 @@ function CreateFormBtn() {
                 </Form>
                 <DialogFooter>
                     <Button
-                        onClick={() => form.handleSubmit(onSubmit)}
+                        onClick={form.handleSubmit(onSubmit)}
                         disabled={form.formState.isSubmitting} 
                         className="w-full mt-4"
                     >
